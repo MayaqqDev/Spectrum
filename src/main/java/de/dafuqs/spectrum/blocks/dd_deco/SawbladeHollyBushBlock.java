@@ -62,7 +62,7 @@ public class SawbladeHollyBushBlock extends PlantBlock implements Fertilizable {
     }
     
     @Override
-    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+    public boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
         return floor.isIn(SpectrumBlockTags.SAWBLADE_HOLLY_PLANTABLE);
     }
     

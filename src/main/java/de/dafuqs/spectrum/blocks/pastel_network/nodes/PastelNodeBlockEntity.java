@@ -45,11 +45,11 @@ public class PastelNodeBlockEntity extends BlockEntity implements FilterConfigur
 	protected BlockApiCache<Storage<ItemVariant>, Direction> connectedStorageCache = null;
 	protected Direction cachedDirection = null;
 
-    private final List<Item> filterItems;
+    private final List<ItemStack> filterItems;
 
     public PastelNodeBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(SpectrumBlockEntities.PASTEL_NODE, blockPos, blockState);
-        this.filterItems = DefaultedList.ofSize(ITEM_FILTER_COUNT, Items.AIR);
+        this.filterItems = DefaultedList.ofSize(ITEM_FILTER_COUNT, ItemStack.EMPTY);
     }
 
     public @Nullable Storage<ItemVariant> getConnectedStorage() {
@@ -188,12 +188,12 @@ public class PastelNodeBlockEntity extends BlockEntity implements FilterConfigur
     }
 
     @Override
-    public List<Item> getItemFilters() {
+    public List<ItemStack> getItemFilters() {
         return this.filterItems;
     }
 
     @Override
-    public void setFilterItem(int slot, Item item) {
+    public void setFilterItem(int slot, ItemStack item) {
         this.filterItems.set(slot, item);
     }
 

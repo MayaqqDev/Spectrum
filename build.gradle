@@ -22,6 +22,8 @@ repositories {
 	maven { url = "https://api.modrinth.com/maven" } // Revelationary, Additional Entity Attributes, Fractal Lib, Colorful Hearts, idwtialsimmoedm
 	maven { url = "https://cfa2.cursemaven.com" }
 	maven { url = "https://repo.unascribed.com" } // Ears API
+	maven { url = "https://mvn.devos.one/snapshots/" } // Create Fabric
+	maven { url = "https://maven.tterrag.com" } // Flywheel
 	mavenCentral()
 }
 
@@ -96,6 +98,9 @@ dependencies {
 
 	// idwtialsimmoedm compat
 	modImplementation("maven.modrinth:idwtialsimmoedm:${project.idwtialsimmoedm_version}")
+
+	// create fabric compat
+	modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version}:${project.create_fabric_version}+mc${project.minecraft_version}")
 }
 
 loom {

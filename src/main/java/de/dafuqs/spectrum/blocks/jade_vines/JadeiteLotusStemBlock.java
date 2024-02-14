@@ -97,7 +97,7 @@ public class JadeiteLotusStemBlock extends PlantBlock {
     }
 
     @Override
-    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+    public boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
         return floor.isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID) || floor.isSideSolid(world, pos, Direction.DOWN, SideShapeType.RIGID) || floor.isOf(this);
     }
 

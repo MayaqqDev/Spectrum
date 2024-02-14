@@ -48,7 +48,7 @@ public class JadeiteLotusBulbBlock extends PlantBlock implements Fertilizable {
 	}
 
     @Override
-    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+	public boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
         return super.canPlantOnTop(floor, world, pos) || floor.isIn(SpectrumBlockTags.BASE_STONE_DEEPER_DOWN);
     }
 

@@ -136,7 +136,7 @@ public class BlackHoleChestScreenHandler extends ScreenHandler {
 		@Override
 		public boolean onClicked(ItemStack heldStack, ClickType type, PlayerEntity player) {
 			if (blackHoleChestBlockEntity != null) {
-				blackHoleChestBlockEntity.setFilterItem(getIndex(), heldStack.getItem());
+				blackHoleChestBlockEntity.setFilterItem(getIndex(), heldStack);
 			}
 			return super.onClicked(heldStack, type, player);
 		}

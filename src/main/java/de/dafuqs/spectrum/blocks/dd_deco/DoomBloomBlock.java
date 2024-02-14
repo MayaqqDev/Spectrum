@@ -47,7 +47,7 @@ public class DoomBloomBlock extends FlowerBlock implements Fertilizable, Explosi
 	}
 	
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+	public boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		return floor.isIn(SpectrumBlockTags.DOOMBLOOM_PLANTABLE);
 	}
 	

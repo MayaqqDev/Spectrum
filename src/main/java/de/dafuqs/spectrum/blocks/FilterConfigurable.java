@@ -11,20 +11,23 @@ import java.util.*;
 
 public interface FilterConfigurable {
 
-    List<Item> getItemFilters();
+    List<ItemStack> getItemFilters();
 
-    void setFilterItem(int slot, Item item);
+    void setFilterItem(int slot, ItemStack item);
 
-    default void writeFilterNbt(NbtCompound tag, List<Item> filterItems) {
+    default void writeFilterNbt(NbtCompound tag, List<ItemStack> filterItems) {
         for (int i = 0; i < filterItems.size(); i++) {
-			tag.putString("Filter" + i, Registries.ITEM.getId(filterItems.get(i)).toString());
+            tag.putString("Filter" + i, Registries.ITEM.getId(filterItems.get(i).getItem()).toString());
+            tag.put("Filter" + i + "nbt", filterItems.get(i).getNbt());
         }
     }
 
-    default void readFilterNbt(NbtCompound tag, List<Item> filterItems) {
+    default void readFilterNbt(NbtCompound tag, List<ItemStack> filterItems) {
         for (int i = 0; i < filterItems.size(); i++) {
             if (tag.contains("Filter" + i, NbtElement.STRING_TYPE)) {
-				filterItems.set(i, Registries.ITEM.get(new Identifier(tag.getString("Filter" + i))));
+                ItemStack stack = new ItemStack(Registries.ITEM.get(new Identifier(tag.getString("Filter" + i))));
+                stack.setNbt(tag.getCompound("Filter" + i + "nbt"));
+                filterItems.set(i, stack);
             }
         }
     }
@@ -33,33 +36,35 @@ public interface FilterConfigurable {
         int size = packetByteBuf.readInt();
         Inventory inventory = new SimpleInventory(size);
         for (int i = 0; i < size; i++) {
-			inventory.setStack(i, Registries.ITEM.get(packetByteBuf.readIdentifier()).getDefaultStack());
+            ItemStack stack = Registries.ITEM.get(packetByteBuf.readIdentifier()).getDefaultStack();
+            stack.setNbt(packetByteBuf.readNbt());
+			inventory.setStack(i, stack);
         }
         return inventory;
     }
 
-    static Inventory getFilterInventoryFromItems(List<Item> items) {
+    static Inventory getFilterInventoryFromItems(List<ItemStack> items) {
         Inventory inventory = new SimpleInventory(items.size());
         for (int i = 0; i < items.size(); i++) {
-            inventory.setStack(i, items.get(i).getDefaultStack());
+            inventory.setStack(i, items.get(i));
         }
         return inventory;
     }
 
-    static void writeScreenOpeningData(PacketByteBuf buf, List<Item> filterItems) {
+    static void writeScreenOpeningData(PacketByteBuf buf, List<ItemStack> filterItems) {
         buf.writeInt(filterItems.size());
-        for (Item filterItem : filterItems) {
-			buf.writeIdentifier(Registries.ITEM.getId(filterItem));
+        for (ItemStack filterItem : filterItems) {
+			buf.writeIdentifier(Registries.ITEM.getId(filterItem.getItem()));
+            buf.writeNbt(filterItem.getNbt());
         }
     }
 
     default boolean hasEmptyFilter() {
-        for (Item item : getItemFilters()) {
-            if (item != Items.AIR) {
+        for (ItemStack item : getItemFilters()) {
+            if (!Objects.equals(item, new ItemStack(Items.AIR))) {
                 return false;
             }
         }
         return true;
     }
-
 }

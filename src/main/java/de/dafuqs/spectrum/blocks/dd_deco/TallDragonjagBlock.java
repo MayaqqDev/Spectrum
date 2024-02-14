@@ -44,7 +44,7 @@ public class TallDragonjagBlock extends TallPlantBlock implements Dragonjag, Fer
 	}
 	
 	@Override
-	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+	public boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		return Dragonjag.canPlantOnTop(floor, world, pos);
 	}
 	

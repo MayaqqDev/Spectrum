@@ -41,12 +41,12 @@ public class BlackHoleChestBlockEntity extends SpectrumChestBlockEntity implemen
 	public static final int EXPERIENCE_STORAGE_PROVIDER_ITEM_SLOT = 27;
 	private static final int RANGE = 12;
 	private final ItemAndExperienceEventQueue itemAndExperienceEventQueue;
-	private final List<Item> filterItems;
+	private final List<ItemStack> filterItems;
 	
 	public BlackHoleChestBlockEntity(BlockPos blockPos, BlockState blockState) {
 		super(SpectrumBlockEntities.BLACK_HOLE_CHEST, blockPos, blockState);
 		this.itemAndExperienceEventQueue = new ItemAndExperienceEventQueue(new BlockPositionSource(this.pos), RANGE, this);
-		this.filterItems = DefaultedList.ofSize(ITEM_FILTER_SLOT_COUNT, Items.AIR);
+		this.filterItems = DefaultedList.ofSize(ITEM_FILTER_SLOT_COUNT, new ItemStack(Items.AIR));
 	}
 
 	public static void tick(@NotNull World world, BlockPos pos, BlockState state, BlackHoleChestBlockEntity blockEntity) {
@@ -95,7 +95,8 @@ public class BlackHoleChestBlockEntity extends SpectrumChestBlockEntity implemen
 	public void writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		for (int i = 0; i < ITEM_FILTER_SLOT_COUNT; i++) {
-			tag.putString("Filter" + i, Registries.ITEM.getId(this.filterItems.get(i)).toString());
+			tag.putString("Filter" + i, Registries.ITEM.getId(this.filterItems.get(i).getItem()).toString());
+			tag.put("Filter" + i + "nbt", this.filterItems.get(i).getNbt());
 		}
 	}
 	
@@ -104,7 +105,9 @@ public class BlackHoleChestBlockEntity extends SpectrumChestBlockEntity implemen
 		super.readNbt(tag);
 		for (int i = 0; i < ITEM_FILTER_SLOT_COUNT; i++) {
 			if (tag.contains("Filter" + i, NbtElement.STRING_TYPE)) {
-				this.filterItems.set(i, Registries.ITEM.get(new Identifier(tag.getString("Filter" + i))));
+				ItemStack stack = new ItemStack(Registries.ITEM.get(new Identifier(tag.getString("Filter" + i))));
+				stack.setNbt(tag.getCompound("Filter" + i + "nbt"));
+				this.filterItems.set(i, stack);
 			}
 		}
 	}
@@ -154,7 +157,7 @@ public class BlackHoleChestBlockEntity extends SpectrumChestBlockEntity implemen
 				if (remainingStack.isEmpty()) {
 					sendPlayItemEntityAbsorbedParticle((ServerWorld) world, itemEntity);
 					world.playSound(null, itemEntity.getBlockPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.9F + world.random.nextFloat() * 0.2F, 0.9F + world.random.nextFloat() * 0.2F);
-					itemEntity.setStack(ItemStack.EMPTY);
+					itemEntity.setStack(new ItemStack(Items.AIR));
 					itemEntity.discard();
 				} else {
 					if (remainingStack.getCount() != previousAmount) {
@@ -195,11 +198,11 @@ public class BlackHoleChestBlockEntity extends SpectrumChestBlockEntity implemen
 		FilterConfigurable.writeScreenOpeningData(buf, filterItems);
 	}
 
-	public List<Item> getItemFilters() {
+	public List<ItemStack> getItemFilters() {
 		return this.filterItems;
 	}
 
-	public void setFilterItem(int slot, Item item) {
+	public void setFilterItem(int slot, ItemStack item) {
 		this.filterItems.set(slot, item);
 		this.markDirty();
 	}
@@ -211,10 +214,10 @@ public class BlackHoleChestBlockEntity extends SpectrumChestBlockEntity implemen
 		
 		boolean allAir = true;
 		for (int i = 0; i < ITEM_FILTER_SLOT_COUNT; i++) {
-			Item filterItem = this.filterItems.get(i);
-			if (filterItem.equals(itemStack.getItem())) {
+			ItemStack filterItem = this.filterItems.get(i);
+			if (filterItem.equals(itemStack)) {
 				return true;
-			} else if (!filterItem.equals(Items.AIR)) {
+			} else if (!filterItem.equals(new ItemStack(Items.AIR))) {
 				allAir = false;
 			}
 		}
